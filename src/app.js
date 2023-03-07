@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import userRoutes from "./routes/userRoutes.js";
 import timelineRoutes from "./routes/timelineRoutes.js";
+import hashtagsRoutes from "./routes/hashtagRoutes.js";
 
 
 const server = express();
@@ -10,7 +11,7 @@ server.use(cors());
 
 
 
-server.use([userRoutes, timelineRoutes]);
+server.use([userRoutes, timelineRoutes, hashtagsRoutes]);
 const PORT = process.env.PORT || 5000;
 
 
