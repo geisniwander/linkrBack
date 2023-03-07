@@ -16,7 +16,7 @@ export async function getPostsByHashtags(hashtag) {
     JOIN hashtags ON hashtags.id = posts_hashtags.hashtag_id
     WHERE hashtags.name = $1 OR hashtags.name = $2
   `,
-    [hashtag, `#${hashtag}}`]
+    [hashtag, `#${hashtag}`]
   );
 
   return posts.rows;
