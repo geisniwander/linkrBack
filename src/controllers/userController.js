@@ -1,6 +1,7 @@
 import { db } from "../database/database.js";
 import {v4 as uuid } from 'uuid';
 import bcrypt from 'bcrypt';
+import { getUserByIdRepository } from "../repositories/userRepository.js";
 
 
 export async function signUp(req, res){
@@ -68,3 +69,17 @@ export async function logout(req, res){
         res.status(500).send(error.message)
     }
 }
+
+export async function getUserById(req, res) {
+    const { id } = req.params;
+  
+    try {
+      const result = await getUserByIdRepository(id);
+  
+      if (result.rowCount === 0) return res.sendStatus(404);
+  
+      return res.status(200).send(result.rows[0].json_build_object);
+    } catch (error) {
+      return res.status(500).send(error.message);
+    }
+  }
