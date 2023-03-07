@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import userRoutes from "./routes/userRoutes.js";
 
 
 
@@ -9,7 +10,7 @@ server.use(cors());
 
 
 
-// server.use([]);
+server.use([userRoutes]);
 const PORT = process.env.PORT || 5000;
 
 
