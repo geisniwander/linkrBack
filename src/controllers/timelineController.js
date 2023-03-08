@@ -1,5 +1,5 @@
 import urlMetadata from "url-metadata";
-import { postPublishRepository, getHashtagsByNameRepository, postHashtagsByNameRepository, getPostByUserIdRepository, getAvatarByUserIdRepository, getPostsRepository, getLikesRepository, postLikesByPostIdRepository, deleteLikesByPostIdRepository } from "../repositories/timelineRepositories.js";
+import { postPublishRepository, getHashtagsByNameRepository, postHashtagsByNameRepository, getPostByUserIdRepository, getAvatarByUserIdRepository, getPostsRepository, getLikesRepository, postLikesByPostIdRepository, deleteLikesByPostIdRepository, postPostsHashtagsRepository } from "../repositories/timelineRepositories.js";
 
 export async function getAvatar(req, res) {
     try {
