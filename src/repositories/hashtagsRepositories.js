@@ -8,7 +8,7 @@ export async function getAllHashtags() {
 export async function getPostsByHashtags(hashtag) {
   const posts = await db.query(
     `
-    SELECT posts.id, posts.text, posts.user_id, picture_url as user_picture, username,
+    SELECT posts.id, posts.text, posts.user_id, picture_url, posts.url, username,
     (SELECT COUNT(*) from likes WHERE likes.post_id = posts.id) as likes
     FROM posts
     JOIN users ON user_id = users.id
