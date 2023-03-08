@@ -6,6 +6,8 @@ import {
   login,
   logout,
   getUserById,
+  getUserByUsername,
+  getUserByPieceUsername,
 } from "../controllers/userController.js";
 
 const userRoutes = Router();
@@ -13,6 +15,8 @@ const userRoutes = Router();
 userRoutes.post("/signup", validateSchema(userSchema), signUp);
 userRoutes.post("/signin", validateSchema(loginSchema), login);
 userRoutes.get("/user/:id", getUserById);
+userRoutes.get("/user/piecename/:username", getUserByPieceUsername);
+userRoutes.get("/user/name/:username", getUserByUsername);
 userRoutes.delete("/logout", logout);
 
 export default userRoutes;
