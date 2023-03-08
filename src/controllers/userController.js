@@ -131,10 +131,8 @@ export async function getUserByUsername(req, res) {
       const result = await getUserByUsernameRepository(username);
   
       if (result.rowCount === 0) return res.sendStatus(404);
-  
-      const users = result.rows.map((row) => row.json_build_object);
-  
-      return res.status(200).send(users);
+    
+      return res.status(200).send(result.rows[0].json_build_object);
     } catch (error) {
       return res.status(500).send(error.message);
     }
