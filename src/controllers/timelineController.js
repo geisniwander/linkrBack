@@ -13,9 +13,16 @@ export async function getTimeline(req, res){
                 function (metadata) {
                     postsMetadata[i] = {...p, title: metadata.title, image:metadata.image, description: metadata.description}
                     i++
-                    console.log(i)
                     if(i === posts.rows.length){
-                        console.log(postsMetadata)
+                        postsMetadata.sort(function (a, b) {
+                            if (a.id < b.id) {
+                              return 1;
+                            }
+                            if (a.id > b.id) {
+                              return -1;
+                            }
+                            return 0;
+                          });
                         return res.send({avatar: url.rows[0].picture_url, posts: postsMetadata});
                     }
                     
