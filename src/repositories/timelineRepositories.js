@@ -24,7 +24,7 @@ export async function postPostsHashtagsRepository(postId, hashtagId) {
 }
 
 export async function getAvatarByUserIdRepository(user_id) {
-    return await db.query(`SELECT picture_url FROM users WHERE id=$1;`, [user_id])
+    return await db.query(`SELECT picture_url, username FROM users WHERE id=$1;`, [user_id])
 }
 
 export async function getPostsRepository() {
