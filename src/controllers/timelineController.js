@@ -1,11 +1,27 @@
 import { db } from "../database/database.js";
+import urlMetadata from "url-metadata";
 
 export async function getTimeline(req, res){
     try{
         const session = res.locals.session;
         const url = await db.query(`SELECT picture_url FROM users WHERE id=$1;`, [session.user_id])
         const posts = await db.query(`SELECT posts.id, posts.text, posts.url, users.picture_url, users.username FROM posts JOIN users ON users.id = posts.user_id ORDER BY posts.id DESC LIMIT 20;`)
-        return res.send({avatar: url.rows[0].picture_url, posts: posts.rows});
+        let i = 0
+        const postsMetadata = posts.rows
+        posts.rows.forEach(p => {
+            urlMetadata(p.url).then(
+                function (metadata) {
+                    postsMetadata[i] = {...p, title: metadata.title, image:metadata.image, description: metadata.description}
+                    i++
+                    console.log(i)
+                    if(i === posts.rows.length){
+                        console.log(postsMetadata)
+                        return res.send({avatar: url.rows[0].picture_url, posts: postsMetadata});
+                    }
+                    
+                })
+        })
+        
     } catch (error){
         res.status(500).send(error.message)
     }
