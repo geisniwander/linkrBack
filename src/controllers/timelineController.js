@@ -16,12 +16,16 @@ export async function getAvatar(req, res) {
 export async function getTimeline(req, res) {
     try {
         const posts = await getPostsRepository();
-        for (const post of posts.rows) {
-            const meta = await urlMetadata(post.url);
-            post.title = meta.title;
-            post.image = meta.image;
-            post.description = meta.description;
-        }
+        try {
+            for (const post of posts) {
+              const meta = await urlMetadata(post.url);
+              post.title = meta.title;
+              post.image = meta.image;
+              post.description = meta.description;
+            }
+          } catch (error) {
+            console.log(error);
+          }
         
         return res.status(200).send(posts.rows);
 
