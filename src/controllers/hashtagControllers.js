@@ -19,7 +19,6 @@ export async function getPostsByHashtagsController(req, res) {
   try {
     const posts = await getPostsByHashtags(hashtag);
     for (const post of posts) {
-      console.log(post.id);
       const meta = await urlMetadata(post.url);
       post.title = meta.title;
       post.image = meta.image;
