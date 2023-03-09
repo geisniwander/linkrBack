@@ -62,7 +62,7 @@ export async function postLikesByPostIdRepository(postId, userId) {
 export async function deleteLikesByPostIdRepository(postId, userId) {
   await db.query(`delete from likes where post_id = $1 AND user_id = $2;`, [
     postId,
-    userId,
+    userId
   ]);
 }
 
@@ -98,3 +98,15 @@ export async function putPublishRepository(description, postId, userId) {
   ]);
 }
 
+export async function deletePublishByPostIdRepository(postId, userId) {
+  await db.query(`delete from likes where post_id = $1;`, [
+    postId
+  ]);
+  await db.query(`delete from posts_hashtags where post_id = $1;`, [
+    postId
+  ]);
+  await db.query(`delete from posts where id = $1 AND user_id = $2;`, [
+    postId,
+    userId
+  ]);
+}

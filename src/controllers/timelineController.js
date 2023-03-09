@@ -11,7 +11,8 @@ import {
   deleteLikesByPostIdRepository,
   postPostsHashtagsRepository,
   getTimelineByUserIdRepository,
-  putPublishRepository
+  putPublishRepository,
+  deletePublishByPostIdRepository
 } from "../repositories/timelineRepositories.js";
 import { getUserByIdRepository } from "../repositories/userRepository.js";
 
@@ -105,6 +106,20 @@ export async function putPublish(req, res) {
     }
 
     return res.sendStatus(201);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+}
+
+export async function deletePublish(req, res) {
+  const { post_id } = req.params;
+
+  try {
+    const session = res.locals.session;
+
+    await deletePublishByPostIdRepository(Number(post_id), session.user_id);
+
+    return res.sendStatus(204);
   } catch (error) {
     res.status(500).send(error.message);
   }
