@@ -75,7 +75,7 @@ export async function getTimelineByUserIdRepository(user_id) {
         'picture_url', users.picture_url,
         'user_posts', json_agg(
           json_build_object(
-            'id', posts.id,
+            'post_id', posts.id,
             'user_id', posts.user_id,
             'username', users.username,
             'picture_url', users.picture_url,
