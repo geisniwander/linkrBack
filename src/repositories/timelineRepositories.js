@@ -41,14 +41,15 @@ export async function getAvatarByUserIdRepository(user_id) {
 
 export async function getPostsRepository() {
   return await db.query(
-    `SELECT posts.id, posts.text, posts.url, users.picture_url, users.username, users.id FROM posts JOIN users ON users.id = posts.user_id ORDER BY posts.id DESC LIMIT 20;`
+    `SELECT posts.id as post_id, posts.text, posts.url, users.picture_url, users.username, users.id as user_id FROM posts JOIN users ON users.id = posts.user_id ORDER BY posts.id DESC LIMIT 20;`
   );
 }
 
-export async function getLikesRepository() {
+export async function getLikesByIdRepository(postId) {
   return await db.query(
-    `select users.username, likes.post_id from likes join users on likes.user_id = users.id;`
-  );
+    `select users.username from likes join users on likes.user_id = users.id where post_id = $1;`, [
+      postId
+    ]);
 }
 
 export async function postLikesByPostIdRepository(postId, userId) {
@@ -90,3 +91,10 @@ export async function getTimelineByUserIdRepository(user_id) {
     [user_id]
   );
 }
+
+export async function putPublishRepository(description, postId, userId) {
+  await db.query(`UPDATE posts SET "text"=$1 WHERE id = $2 AND user_id = $3;`, [
+    description, postId, userId
+  ]);
+}
+

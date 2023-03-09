@@ -5,6 +5,11 @@ export const postSchema = joi.object({
     description: joi.string().allow(null, '')
 })
 
+export const putSchema = joi.object({
+    post_id: joi.number().required(),
+    description: joi.string().allow(null, '')
+})
+
 export const likeSchema = joi.object({
     post_id: joi.number().required()
 })
