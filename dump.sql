@@ -88,7 +88,7 @@ ALTER SEQUENCE public.likes_id_seq OWNED BY public.likes.id;
 CREATE TABLE public.posts (
     id integer NOT NULL,
     user_id integer NOT NULL,
-    text text NOT NULL,
+    text text,
     url text NOT NULL
 );
 
