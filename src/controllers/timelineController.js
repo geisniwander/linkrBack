@@ -6,11 +6,12 @@ import {
   getPostByUserIdRepository,
   getAvatarByUserIdRepository,
   getPostsRepository,
-  getLikesRepository,
+  getLikesByIdRepository,
   postLikesByPostIdRepository,
   deleteLikesByPostIdRepository,
   postPostsHashtagsRepository,
   getTimelineByUserIdRepository,
+  putPublishRepository
 } from "../repositories/timelineRepositories.js";
 import { getUserByIdRepository } from "../repositories/userRepository.js";
 
@@ -77,9 +78,42 @@ export async function postPublish(req, res) {
   }
 }
 
-export async function getLikes(req, res) {
+export async function putPublish(req, res) {
+  const { post_id, description } = req.body;
+
   try {
-    const likes = await getLikesRepository();
+    const session = res.locals.session;
+
+    await putPublishRepository(description, post_id, session.user_id);
+
+    if (description.includes("#")) {
+      const array = description.split(" ");
+      const hashtags = array.filter((i) => i.includes("#"));
+
+      hashtags.forEach(async (element) => {
+        const hashtag = await getHashtagsByNameRepository(element);
+        if (hashtag.rowCount === 0) {
+          await postHashtagsByNameRepository(element);
+        }
+        const hashtagId = await getHashtagsByNameRepository(element);
+        const postId = await getPostByUserIdRepository(session.user_id);
+        await postPostsHashtagsRepository(
+          postId.rows[0].id,
+          hashtagId.rows[0].id
+        );
+      });
+    }
+
+    return res.sendStatus(201);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+}
+
+export async function getLikes(req, res) {
+  const { post_id } = req.params;
+  try {
+    const likes = await getLikesByIdRepository(Number(post_id));
 
     return res.send(likes.rows);
   } catch (error) {
