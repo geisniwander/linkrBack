@@ -17,7 +17,7 @@ export async function getTimeline(req, res) {
     try {
         const posts = await getPostsRepository();
         try {
-            for (const post of posts) {
+            for (const post of posts.rows) {
               const meta = await urlMetadata(post.url);
               post.title = meta.title;
               post.image = meta.image;
