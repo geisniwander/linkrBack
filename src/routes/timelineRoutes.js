@@ -7,7 +7,8 @@ import {
   postLikes,
   deleteLikes,
   getUserProfile,
-  putPublish
+  putPublish,
+  deletePublish
 } from "../controllers/timelineController.js";
 import { authValidation } from "../middlewares/authValidation.js";
 import { validateSchema } from "../middlewares/validateSchema.js";
@@ -24,5 +25,6 @@ timelineRoutes.post("/likes", validateSchema(likeSchema), postLikes);
 timelineRoutes.delete("/likes/:post_id", deleteLikes);
 timelineRoutes.post("/publish", validateSchema(postSchema), postPublish);
 timelineRoutes.put("/publish", validateSchema(putSchema), putPublish);
+timelineRoutes.delete("/publish/:post_id", deletePublish);
 
 export default timelineRoutes;
