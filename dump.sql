@@ -89,6 +89,7 @@ CREATE TABLE public.posts (
     id integer NOT NULL,
     user_id integer NOT NULL,
     text text,
+    created_at timestamp NOT NULL DEFAULT NOW(),
     url text NOT NULL
 );
 
