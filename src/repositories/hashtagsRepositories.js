@@ -15,7 +15,7 @@ export async function getPostsByHashtags(hashtag) {
     JOIN posts_hashtags on posts_hashtags.post_id = posts.id
     JOIN hashtags ON hashtags.id = posts_hashtags.hashtag_id
     WHERE hashtags.name = $1 OR hashtags.name = $2
-    ORDER BY posts.id DESC
+    ORDER BY posts.created_at DESC
     LIMIT 20
   `,
     [hashtag, `#${hashtag}`]

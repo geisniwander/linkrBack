@@ -154,6 +154,7 @@ CREATE TABLE public.posts (
     text text,
     url text NOT NULL,
     created_at timestamp without time zone DEFAULT now() NOT NULL
+
 );
 
 
