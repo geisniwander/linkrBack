@@ -5,6 +5,8 @@ import {
   getUserByIdRepository,
   getUserByPieceUsernameRepository,
   getUserByUsernameRepository,
+  followUser,
+  getUser,
 } from "../repositories/userRepository.js";
 
 export async function signUp(req, res) {
@@ -135,5 +137,25 @@ export async function getUserByUsername(req, res) {
       return res.status(200).send(result.rows[0].json_build_object);
     } catch (error) {
       return res.status(500).send(error.message);
+    }
+  }
+
+  //// sprint 2
+  export async function follow(req,res) {
+    // const { id } = req.params; //id de quem ta logado
+    const { authorization} = req.headers;
+    const token = authorization?.replace("Bearer ","");
+    const followedId = req.params.id; 
+    console.log("passou")
+    
+
+    try{
+      const followerId = (await getUser(token)).rows[0].user_id;
+      await followUser(followerId, followedId)
+      console.log("passou2")
+      res.sendStatus(201);
+    }catch(error){
+      console.log("passou3")
+      res.sendStatus(500);
     }
   }
