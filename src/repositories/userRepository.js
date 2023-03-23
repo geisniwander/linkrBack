@@ -40,24 +40,36 @@ export async function getUserByPieceUsernameRepository(username) {
   }
 
   ///sprint 2
-  export function followUser(user_followed, user_id){
+  export async function followUser(user_id, user_followed){
     return db.query(
-      ` INSERT INTO follows (user_followed, user_id)
+      ` INSERT INTO follows (user_id, user_followed)
       VALUES($1, $2)`,
       [user_followed, user_id]
     );
   }
 
-  export function unfollowUser(user_followed, user_id){
+  export async function unfollowUser(user_id, user_followed){
     return db.query(
-      `DELETE FROM followers WHERE user_followed=$1 AND follower_id=$2`,
+      `DELETE FROM follows WHERE user_id=$1 AND user_followed=$2`,
       [user_followed, user_id]
     );
   }
 
-  export function getUser(token){
+  export async function getUser(token){
     return db.query(
       `SELECT user_id FROM sessions WHERE token =$1`,
       [token]
     );
+  }
+
+  export async function checkFollow(user_id, user_followed){
+    const result = await db.query(
+      `SELECT * FROM follows WHERE user_id = $1 AND user_followed = $2;`,
+      [user_id, user_followed]
+    );
+    // if (result.rows.length === 0){
+    //   return false;
+    // } else {
+    //   return true;
+    // }
   }

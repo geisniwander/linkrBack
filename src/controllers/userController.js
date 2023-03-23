@@ -8,6 +8,7 @@ import {
   followUser,
   unfollowUser,
   getUser,
+  checkFollow,
 } from "../repositories/userRepository.js";
 
 export async function signUp(req, res) {
@@ -142,34 +143,55 @@ export async function getUserByUsername(req, res) {
   }
 
   //// sprint 2
-  export async function follow(req,res) {
-    // const { id } = req.params; //id de quem ta logado
-    const { authorization} = req.headers;
-    const token = authorization?.replace("Bearer ","");
-    const followedId = req.params.id; 
+  // export async function follow(req,res) {
+  //   // const { id } = req.params; //id de quem ta logado
+  //   const { authorization} = req.headers;
+  //   const token = authorization?.replace("Bearer ","");
+  //   const followedId = req.params.id; 
     
     
 
-    try{
-      const followerId = (await getUser(token)).rows[0].user_id;
-      await followUser(followerId, followedId)
+  //   try{
+  //     const followerId = (await getUser(token)).rows[0].user_id;
+  //     await followUser(followerId, followedId)
       
-      res.sendStatus(201);
-    }catch(error){
+  //     res.sendStatus(201);
+  //   }catch(error){
      
-      res.sendStatus(500);
-    }
-  }
+  //     res.sendStatus(500);
+  //   }
+  // }
 
-  export async function unfollow(req,res){
+  // export async function unfollow(req,res){
+  //   const { authorization} = req.headers;
+  //   const token = authorization?.replace("Bearer ", "");
+  //   const followedId = req.params.id
+  //   try {
+  //     const followerId = (await getUser(token)).rows[0].user_id;
+  //     await unfollowUser(followerId, followedId)
+  //     res.sendStatus(201);
+  //   }catch(error){
+  //     res.sendStatus(500);
+  //   }
+  // }
+
+  export async function statusFollow(req,res){
     const { authorization} = req.headers;
     const token = authorization?.replace("Bearer ", "");
-    const followedId = req.params.id
+    
     try {
-      const followerId = (await getUser(token)).rows[0].user_id;
-      await unfollowUser(followerId, followedId)
-      res.sendStatus(201);
+      const user_id = Number(req.params.id);
+      const user_followed = (await getUser(token)).rows[0].user_id;
+      
+      
+      const check = checkFollow(user_followed, user_id);
+      if(check) {
+        await unfollowUser(user_id, user_followed)
+      } else {
+        await followUser(user_id, user_followed)
+      }
+      return res.status(200).send(!check);
     }catch(error){
-      res.sendStatus(500);
+      return res.sendStatus(500);
     }
   }

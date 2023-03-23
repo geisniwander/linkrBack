@@ -8,7 +8,7 @@ import {
   getUserById,
   getUserByUsername,
   getUserByPieceUsername,
-  follow,
+  statusFollow,
 } from "../controllers/userController.js";
 import { authValidation } from "../middlewares/authValidation.js";
 
@@ -18,8 +18,8 @@ userRoutes.post("/signup", validateSchema(userSchema), signUp);
 userRoutes.post("/signin", validateSchema(loginSchema), login);
 userRoutes.get("/user/piecename/:username", getUserByPieceUsername);
 userRoutes.get("/user/name/:username", getUserByUsername);
-userRoutes.get("/user/:id/follow", authValidation, follow); // sprint 2
-userRoutes.get("/user/:id/unfollow", authValidation); // sprint 2
+userRoutes.get("/user/:id/follow", authValidation, statusFollow); // sprint 2
+userRoutes.get("/user/:id/unfollow", authValidation, statusFollow); // sprint 2
 userRoutes.delete("/logout", logout);
 
 export default userRoutes;
