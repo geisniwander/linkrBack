@@ -11,6 +11,7 @@ export async function getUpdatedPostsController(req, res) {
       postIdAfter,
       postIdBefore,
     });
+    await addMetaData(posts);
     return res.status(200).send(posts);
   } catch (error) {
     console.log(error);
