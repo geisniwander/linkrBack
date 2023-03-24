@@ -5,6 +5,10 @@ import {
   getUserByIdRepository,
   getUserByPieceUsernameRepository,
   getUserByUsernameRepository,
+  followUser,
+  unfollowUser,
+  followId,
+  mutualId,
 } from "../repositories/userRepository.js";
 
 export async function signUp(req, res) {
@@ -43,6 +47,7 @@ export async function login(req, res) {
     const logged = await db.query("SELECT * FROM users WHERE email = $1", [
       email,
     ]);
+    console.log(logged)
     if (logged.rowCount === 0)
       return res.status(401).send("Incorrect username or password");
 
@@ -137,3 +142,82 @@ export async function getUserByUsername(req, res) {
       return res.status(500).send(error.message);
     }
   }
+
+  //// sprint 2
+  // export async function follow(req,res) {
+  //   // const { id } = req.params; //id de quem ta logado
+  //   const { authorization} = req.headers;
+  //   const token = authorization?.replace("Bearer ","");
+  //   const followedId = req.params.id; 
+    
+    
+
+  //   try{
+  //     const followerId = (await getUser(token)).rows[0].user_id;
+  //     await followUser(followerId, followedId)
+      
+  //     res.sendStatus(201);
+  //   }catch(error){
+     
+  //     res.sendStatus(500);
+  //   }
+  // }
+
+  // export async function unfollow(req,res){
+  //   const { authorization} = req.headers;
+  //   const token = authorization?.replace("Bearer ", "");
+  //   const followedId = req.params.id
+  //   try {
+  //     const followerId = (await getUser(token)).rows[0].user_id;
+  //     await unfollowUser(followerId, followedId)
+  //     res.sendStatus(201);
+  //   }catch(error){
+  //     res.sendStatus(500);
+  //   }
+  // }
+
+  export async function setFollow(req,res){
+   
+    try {
+    
+      const user_followed = Number(req.params.id);
+      const user_id = res.locals.session
+     
+      if (user_followed === user_id.user_id) {
+        return res.status(401).send("you cant follow")};
+
+      const check = await followId(user_id.user_id,user_followed);
+    
+      
+      if(check.rowCount > 0) {
+        
+        await unfollowUser(user_id.user_id,user_followed);
+        res.status(200).send(false)
+      } else{
+        await followUser(user_id.user_id,user_followed);
+        res.status(200).send(true)
+      }
+      return res.status(200)
+     }catch(error){
+      console.error(error)
+      return res.status(500).send(error.message);
+    }
+  }
+
+export async function canFollow(req,res){
+  try{
+    const user_followed = Number(req.params.id);
+    const user_id = res.locals.session
+    if (user_followed === user_id.user_id) {
+      return res.status(401).send("you cant follow")};
+      const check = await followId(user_id.user_id,user_followed);
+      if(check.rowCount > 0) {
+        return res.status(200).send(false)
+      }
+      return res.status(200).send(true);
+  }catch(error){
+    return res.status(500).send(error.message);
+  }
+  
+}
+

@@ -38,3 +38,43 @@ export async function getUserByPieceUsernameRepository(username) {
       [username]
     );
   }
+
+  ///sprint 2
+  export async function followUser(user_id, user_followed){
+    return db.query(
+      `INSERT INTO follows (user_id, user_followed)
+      VALUES($1, $2)`,
+      [user_id, user_followed]
+    );
+  }
+
+  export async function unfollowUser(user_id, user_followed){
+    return db.query(
+      `DELETE FROM follows WHERE user_id=$1 AND user_followed=$2`,
+      [user_id, user_followed]
+    );
+  }
+
+  // export async function getUser(token){
+  //   return db.query(
+  //     `SELECT user_id FROM sessions WHERE token =$1`,
+  //     [token]
+  //   );
+  // }
+
+  
+  export async function followId(user_id, user_followed){
+   
+    return await db.query(
+      
+      `SELECT * FROM follows WHERE user_id = $1 AND user_followed = $2`,
+      [user_id, user_followed]
+    );
+  }
+
+  export async function mutualId(user_id){
+    return await db.query(
+      `SELECT array_agg(user_followed) AS "ids" FROM follows WHERE user_id = $1`,
+      [user_id]
+      )
+  }
