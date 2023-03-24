@@ -10,6 +10,7 @@ import {
   getUserByPieceUsername,
   canFollow,
   setFollow,
+  showButton,
 } from "../controllers/userController.js";
 import { authValidation } from "../middlewares/authValidation.js";
 
@@ -22,6 +23,7 @@ userRoutes.get("/user/name/:username", getUserByUsername);
 userRoutes.get("/user/:id/follow", authValidation, setFollow); // sprint 2
 userRoutes.get("/user/:id/unfollow", authValidation, setFollow); // sprint 2
 userRoutes.get("/user/:id/status", authValidation, canFollow)
+userRoutes.get("/user/:id/showbutton", authValidation, showButton)
 userRoutes.delete("/logout", logout);
 
 export default userRoutes;

@@ -221,3 +221,15 @@ export async function canFollow(req,res){
   
 }
 
+export async function showButton(req, res){
+  try{
+    const user_followed = Number(req.params.id);
+    const user_id = res.locals.session
+    if (user_followed === user_id.user_id){
+      return res.status(200).send(false);
+    }
+    return res.status(200).send(true)
+  }catch(error){
+    return res.status(500).send(error.message);
+}
+}
