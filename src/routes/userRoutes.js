@@ -5,10 +5,11 @@ import {
   signUp,
   login,
   logout,
-  getUserById,
+  
   getUserByUsername,
   getUserByPieceUsername,
-  statusFollow,
+  canFollow,
+  setFollow,
 } from "../controllers/userController.js";
 import { authValidation } from "../middlewares/authValidation.js";
 
@@ -18,8 +19,9 @@ userRoutes.post("/signup", validateSchema(userSchema), signUp);
 userRoutes.post("/signin", validateSchema(loginSchema), login);
 userRoutes.get("/user/piecename/:username", getUserByPieceUsername);
 userRoutes.get("/user/name/:username", getUserByUsername);
-userRoutes.get("/user/:id/follow", authValidation, statusFollow); // sprint 2
-userRoutes.get("/user/:id/unfollow", authValidation, statusFollow); // sprint 2
+userRoutes.get("/user/:id/follow", authValidation, setFollow); // sprint 2
+userRoutes.get("/user/:id/unfollow", authValidation, setFollow); // sprint 2
+userRoutes.get("/user/:id/status", authValidation, canFollow)
 userRoutes.delete("/logout", logout);
 
 export default userRoutes;
