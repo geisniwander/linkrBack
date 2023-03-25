@@ -12,7 +12,9 @@ import {
   postPostsHashtagsRepository,
   getTimelineByUserIdRepository,
   putPublishRepository,
-  deletePublishByPostIdRepository
+  deletePublishByPostIdRepository,
+  postCommentRepository,
+  getCommentRepository
 } from "../repositories/timelineRepositories.js";
 import { getUserByIdRepository } from "../repositories/userRepository.js";
 
@@ -191,6 +193,33 @@ export async function getUserProfile(req, res) {
     const userPosts = profile.rows[0];
 
     return res.status(200).send(userPosts);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+}
+
+
+export async function postComments(req, res) {
+  const { text, post_id } = req.body;
+
+  try {
+    const session = res.locals.session;
+
+    await postCommentRepository(text, session.user_id, post_id);
+
+    return res.sendStatus(201);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+}
+
+export async function getComments(req, res) {
+  const { post_id } = req.params;
+
+  try {
+    const comments = await getCommentRepository(Number(post_id));
+
+    return res.send(comments.rows);
   } catch (error) {
     res.status(500).send(error.message);
   }

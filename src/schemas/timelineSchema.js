@@ -13,3 +13,8 @@ export const putSchema = joi.object({
 export const likeSchema = joi.object({
     post_id: joi.number().required()
 })
+
+export const postComment = joi.object({
+    post_id: joi.number().required(),
+    text: joi.string().required()
+})
