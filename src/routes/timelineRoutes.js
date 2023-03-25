@@ -10,7 +10,9 @@ import {
   putPublish,
   deletePublish,
   postComments,
-  getComments
+  getComments,
+  getReposts,
+  postReposts
 } from "../controllers/timelineController.js";
 import { authValidation } from "../middlewares/authValidation.js";
 import { validateSchema } from "../middlewares/validateSchema.js";
@@ -30,7 +32,8 @@ timelineRoutes.put("/publish", validateSchema(putSchema), putPublish);
 timelineRoutes.delete("/publish/:post_id", deletePublish);
 timelineRoutes.post("/comments", validateSchema(postComment), postComments);
 timelineRoutes.get("/comments/:post_id", getComments);
-
+timelineRoutes.get("/reposts/:post_id", getReposts);
+timelineRoutes.post("/reposts", validateSchema(likeSchema), postReposts);
 
 
 export default timelineRoutes;

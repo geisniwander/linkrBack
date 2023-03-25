@@ -41,18 +41,32 @@ export async function getAvatarByUserIdRepository(user_id) {
 
 export async function getPostsRepository(user_id) {
   return await db.query(
-    ` SELECT posts.id as post_id, posts.text, posts.url, users.picture_url, users.username, users.id as user_id
+    ` SELECT posts.id as post_id, posts.text, posts.url, users.picture_url, users.username, users.id as user_id, posts.created_at
     FROM posts
     JOIN follows ON follows.user_followed = posts.user_id
     JOIN users ON users.id = posts.user_id
-    WHERE follows.user_id = $1
+    WHERE follows.user_id = $1 OR users.id = $1
     ORDER BY posts.created_at DESC LIMIT 20
   `,
   [user_id]
     
   );
 }
-
+export async function getRepostsRepository(user_id) {
+  return await db.query(
+    ` SELECT ur.username as reposted_by, posts.id as post_id, posts.text, posts.url, u.picture_url, u.username, u.id as user_id, reposts.created_at
+    from reposts 
+    JOIN follows ON follows.user_followed = reposts.user_id 
+    JOIN posts ON reposts.post_id = posts.id
+    JOIN users u ON u.id = posts.user_id
+    JOIN users ur ON ur.id = reposts.user_id
+    WHERE follows.user_id = $1 OR u.id = $1
+    ORDER BY reposts.created_at DESC LIMIT 20
+  `,
+  [user_id]
+    
+  );
+}
 export async function getLikesByIdRepository(postId) {
   return await db.query(
     `select users.username from likes join users on likes.user_id = users.id where post_id = $1;`, [
@@ -142,4 +156,17 @@ export async function getCommentRepository(post_id) {
   [post_id]
     
   );
+}
+
+export async function getRepostsByIdRepository(postId) {
+  return await db.query(
+    `select users.username from reposts join users on reposts.user_id = users.id where post_id = $1;`, [
+      postId
+    ]);
+}
+export async function postRepostsByPostIdRepository(postId, userId) {
+  await db.query(`INSERT INTO reposts (post_id, user_id) VALUES ($1, $2);`, [
+    postId,
+    userId,
+  ]);
 }

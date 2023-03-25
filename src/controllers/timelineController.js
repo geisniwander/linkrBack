@@ -14,7 +14,10 @@ import {
   putPublishRepository,
   deletePublishByPostIdRepository,
   postCommentRepository,
-  getCommentRepository
+  getCommentRepository,
+  getRepostsByIdRepository,
+  postRepostsByPostIdRepository,
+  getRepostsRepository
 } from "../repositories/timelineRepositories.js";
 import { getUserByIdRepository } from "../repositories/userRepository.js";
 
@@ -35,9 +38,22 @@ export async function getTimeline(req, res) {
 
   try {
     const posts = await getPostsRepository(session.user_id);
-    
+    const reposts = await getRepostsRepository(session.user_id);
+    const arrayPosts = [...posts.rows];
+    const arrayReposts = [...reposts.rows];
+    const array = arrayPosts.concat(arrayReposts)
+    array.sort(function (a, b) {
+      if (a.created_at < b.created_at) {
+        return 1;
+      }
+      if (a.created_at > b.created_at) {
+        return -1;
+      }
+      return 0;
+    });
+    const array10 = array.slice(0, 10);
     try {
-      for (const post of posts.rows) {
+      for (const post of array10) {
         const meta = await urlMetadata(post.url);
         post.title = meta.title;
         post.image = meta.image;
@@ -47,7 +63,7 @@ export async function getTimeline(req, res) {
       console.log(error);
     }
 
-    return res.status(200).send(posts.rows);
+    return res.status(200).send(array10);
   } catch (error) {
     res.status(500).send(error.message);
   }
@@ -220,6 +236,29 @@ export async function getComments(req, res) {
     const comments = await getCommentRepository(Number(post_id));
 
     return res.send(comments.rows);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+}
+
+export async function getReposts(req, res) {
+  const { post_id } = req.params;
+  try {
+    const reposts = await getRepostsByIdRepository(Number(post_id));
+
+    return res.send(reposts.rows);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+}
+export async function postReposts(req, res) {
+  const { post_id } = req.body;
+  try {
+    const session = res.locals.session;
+
+    await postRepostsByPostIdRepository(post_id, session.user_id);
+
+    return res.sendStatus(201);
   } catch (error) {
     res.status(500).send(error.message);
   }
