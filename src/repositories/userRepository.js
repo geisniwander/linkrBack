@@ -35,7 +35,7 @@ export async function getUserByPieceUsernameRepository(username, user_id) {
        END,
        username 
      LIMIT 5`,
-      [`${username}%`, user_id]
+      [`%${username}%`, user_id]
     );
   }
 
