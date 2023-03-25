@@ -14,7 +14,7 @@ export async function getFollowedPostsRepository({
         AND
         ((posts.id < $2) OR ($2 = 0))
         AND 
-        (posts.user_id IN ( SELECT user_followed FROM follows WHERE follows.user_id = $3 )  )
+        (posts.user_id IN ( SELECT user_followed FROM follows WHERE follows.user_id = $3  ) OR posts.user_id = $3 )  
         ORDER BY posts.created_at DESC, posts.id DESC
         LIMIT $4;`,
     [postIdAfter, postIdBefore, userId, limit]
