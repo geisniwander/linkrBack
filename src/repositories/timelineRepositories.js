@@ -118,3 +118,28 @@ export async function deletePublishByPostIdRepository(postId, userId) {
     userId
   ]);
 }
+
+export async function postCommentRepository(text, user_id, post_id) {
+  await db.query(
+    `
+        INSERT INTO comments (text, user_id, post_id)
+        VALUES ($1, $2, $3);
+    `,
+    [text, user_id, post_id]
+  );
+}
+
+export async function getCommentRepository(post_id) {
+  return await db.query(
+    ` SELECT comments.id as comment_id, comments.text, users.picture_url, users.username, users.id as user_id,
+    posts.user_id as post_author
+    FROM comments
+    JOIN users ON users.id = comments.user_id
+    JOIN posts ON posts.id = comments.post_id
+    WHERE comments.post_id = $1
+    ORDER BY comments.id DESC
+  `,
+  [post_id]
+    
+  );
+}

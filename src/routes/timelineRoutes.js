@@ -8,11 +8,13 @@ import {
   deleteLikes,
   getUserProfile,
   putPublish,
-  deletePublish
+  deletePublish,
+  postComments,
+  getComments
 } from "../controllers/timelineController.js";
 import { authValidation } from "../middlewares/authValidation.js";
 import { validateSchema } from "../middlewares/validateSchema.js";
-import { postSchema, likeSchema, putSchema } from "../schemas/timelineSchema.js";
+import { postSchema, likeSchema, putSchema, postComment } from "../schemas/timelineSchema.js";
 
 const timelineRoutes = Router();
 
@@ -26,5 +28,9 @@ timelineRoutes.delete("/likes/:post_id", deleteLikes);
 timelineRoutes.post("/publish", validateSchema(postSchema), postPublish);
 timelineRoutes.put("/publish", validateSchema(putSchema), putPublish);
 timelineRoutes.delete("/publish/:post_id", deletePublish);
+timelineRoutes.post("/comments", validateSchema(postComment), postComments);
+timelineRoutes.get("/comments/:post_id", getComments);
+
+
 
 export default timelineRoutes;
