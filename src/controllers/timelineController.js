@@ -28,8 +28,12 @@ export async function getAvatar(req, res) {
 }
 
 export async function getTimeline(req, res) {
+  const session = res.locals.session;
+ 
+
   try {
-    const posts = await getPostsRepository();
+    const posts = await getPostsRepository(session.user_id);
+    
     try {
       for (const post of posts.rows) {
         const meta = await urlMetadata(post.url);
