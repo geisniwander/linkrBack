@@ -39,9 +39,17 @@ export async function getAvatarByUserIdRepository(user_id) {
   );
 }
 
-export async function getPostsRepository() {
+export async function getPostsRepository(user_id) {
   return await db.query(
-    `SELECT posts.id as post_id, posts.text, posts.url, users.picture_url, users.username, users.id as user_id FROM posts JOIN users ON users.id = posts.user_id ORDER BY posts.created_at DESC LIMIT 20;`
+    ` SELECT posts.id as post_id, posts.text, posts.url, users.picture_url, users.username, users.id as user_id
+    FROM posts
+    JOIN follows ON follows.user_followed = posts.user_id
+    JOIN users ON users.id = posts.user_id
+    WHERE follows.user_id = $1
+    ORDER BY posts.created_at DESC LIMIT 20
+  `,
+  [user_id]
+    
   );
 }
 
