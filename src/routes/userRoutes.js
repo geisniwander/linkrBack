@@ -22,7 +22,7 @@ userRoutes.post("/signup", validateSchema(userSchema), signUp);
 userRoutes.post("/signin", validateSchema(loginSchema), login);
 userRoutes.get("/user/piecename/:username", authValidation, getUserByPieceUsername);
 // userRoutes.get("/user/piecename/:username/showfollowing", authValidation,showTextFollowing);
-userRoutes.get("/user/name/:username", getUserByUsername);
+userRoutes.get("/user/name/:username", authValidation,getUserByUsername);
 userRoutes.get("/user/:id/follow", authValidation, setFollow); // sprint 2
 userRoutes.get("/user/:id/unfollow", authValidation, setFollow); // sprint 2
 userRoutes.get("/user/:id/status", authValidation, canFollow)
