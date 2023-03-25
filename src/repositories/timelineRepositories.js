@@ -60,7 +60,7 @@ export async function getRepostsRepository(user_id) {
     JOIN posts ON reposts.post_id = posts.id
     JOIN users u ON u.id = posts.user_id
     JOIN users ur ON ur.id = reposts.user_id
-    WHERE follows.user_id = $1 OR u.id = $1
+    WHERE follows.user_id = $1 OR ur.id = $1
     ORDER BY reposts.created_at DESC LIMIT 20
   `,
   [user_id]
@@ -125,6 +125,12 @@ export async function deletePublishByPostIdRepository(postId, userId) {
     postId
   ]);
   await db.query(`delete from posts_hashtags where post_id = $1;`, [
+    postId
+  ]);
+  await db.query(`delete from comments where post_id = $1;`, [
+    postId
+  ]);
+  await db.query(`delete from reposts where post_id = $1;`, [
     postId
   ]);
   await db.query(`delete from posts where id = $1 AND user_id = $2;`, [
