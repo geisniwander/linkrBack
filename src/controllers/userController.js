@@ -8,7 +8,8 @@ import {
   followUser,
   unfollowUser,
   followId,
-  mutualId,
+  checkFollow,
+  
 } from "../repositories/userRepository.js";
 
 export async function signUp(req, res) {
@@ -47,7 +48,7 @@ export async function login(req, res) {
     const logged = await db.query("SELECT * FROM users WHERE email = $1", [
       email,
     ]);
-    console.log(logged)
+    
     if (logged.rowCount === 0)
       return res.status(401).send("Incorrect username or password");
 
@@ -115,9 +116,10 @@ export async function getUserById(req, res) {
 
 export async function getUserByPieceUsername(req, res) {
   const { username } = req.params;
+  const session = res.locals.session;
 
   try {
-    const result = await getUserByPieceUsernameRepository(username);
+    const result = await getUserByPieceUsernameRepository(username,session.user_id);
 
     if (result.rowCount === 0) return res.sendStatus(404);
 
@@ -143,38 +145,7 @@ export async function getUserByUsername(req, res) {
     }
   }
 
-  //// sprint 2
-  // export async function follow(req,res) {
-  //   // const { id } = req.params; //id de quem ta logado
-  //   const { authorization} = req.headers;
-  //   const token = authorization?.replace("Bearer ","");
-  //   const followedId = req.params.id; 
-    
-    
-
-  //   try{
-  //     const followerId = (await getUser(token)).rows[0].user_id;
-  //     await followUser(followerId, followedId)
-      
-  //     res.sendStatus(201);
-  //   }catch(error){
-     
-  //     res.sendStatus(500);
-  //   }
-  // }
-
-  // export async function unfollow(req,res){
-  //   const { authorization} = req.headers;
-  //   const token = authorization?.replace("Bearer ", "");
-  //   const followedId = req.params.id
-  //   try {
-  //     const followerId = (await getUser(token)).rows[0].user_id;
-  //     await unfollowUser(followerId, followedId)
-  //     res.sendStatus(201);
-  //   }catch(error){
-  //     res.sendStatus(500);
-  //   }
-  // }
+ //sprint2
 
   export async function setFollow(req,res){
    
@@ -233,3 +204,43 @@ export async function showButton(req, res){
     return res.status(500).send(error.message);
 }
 }
+
+export async function checkFollowers(req,res){
+  try{
+ 
+  const session = res.locals.session;
+  
+  const check = await checkFollow(session.user_id);
+  if(check.rowCount > 0) {
+    return res.status(200).send(true)
+  }return res.status(200).send(false)
+  }catch(error){
+    return res.status(500).send(error.message);
+}}
+
+
+// export async function showTextFollowing(req,res){
+//   const {username} = req.params;
+//   try{
+//     const result = await getUserByUsernameRepository(username);
+   
+    
+//     return res.status(200).json(result.rows.map(user => user.json_build_object));
+//   }catch(error){
+//     return res.status(500).send(error.message);
+//   }
+// }
+
+// export async function getUserByUsername(req, res) {
+//     const { username } = req.params;
+  
+//     try {
+//       const result = await getUserByUsernameRepository(username);
+  
+//       if (result.rowCount === 0) return res.sendStatus(404);
+    
+//       return res.status(200).send(result.rows[0].json_build_object);
+//     } catch (error) {
+//       return res.status(500).send(error.message);
+//     }
+//   }
