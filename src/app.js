@@ -3,6 +3,7 @@ import cors from "cors";
 import userRoutes from "./routes/userRoutes.js";
 import timelineRoutes from "./routes/timelineRoutes.js";
 import hashtagsRoutes from "./routes/hashtagRoutes.js";
+import followedPostsRouter from "./routes/postUpdatesRoutes.js";
 
 
 const server = express();
@@ -11,7 +12,7 @@ server.use(cors());
 
 
 
-server.use([userRoutes, timelineRoutes, hashtagsRoutes]);
+server.use([userRoutes, timelineRoutes, hashtagsRoutes, followedPostsRouter]);
 const PORT = process.env.PORT || 5000;
 
 
