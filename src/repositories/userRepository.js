@@ -27,7 +27,7 @@ export async function getUserByPieceUsernameRepository(username, user_id) {
     END
       )
      FROM users
-     WHERE lower(username) LIKE $1::text
+     WHERE lower(username) LIKE lower($1::text)
      ORDER BY 
        CASE WHEN id = ANY(SELECT user_followed FROM follows WHERE user_id = $2)
          THEN 0 
@@ -35,7 +35,7 @@ export async function getUserByPieceUsernameRepository(username, user_id) {
        END,
        username 
      LIMIT 5`,
-      [`${username}%`, user_id]
+      [`%${username}%`, user_id]
     );
   }
 
