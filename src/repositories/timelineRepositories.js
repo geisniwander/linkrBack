@@ -44,7 +44,7 @@ export async function getTimelineRepository({
   limit = 10,
   postIdAfter = 0,
   postIdBefore = 0,
-  repostIdAfter,
+  repostIdAfter = 0,
 }) {
   return await db.query(
     `SELECT null as reposted_by, posts.id as post_id, posts.text, posts.url, users.picture_url, users.username, users.id as user_id, posts.created_at as created_at,
