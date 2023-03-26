@@ -34,6 +34,7 @@ export async function getAvatar(req, res) {
 
 export async function getTimeline(req, res) {
   const { limit, postIdAfter, postIdBefore, repostIdAfter } = req.query;
+
   const { user_id } = res.locals.session;
   try {
     const posts = await getTimelineRepository({
