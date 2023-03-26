@@ -5,7 +5,7 @@ import {
   postHashtagsByNameRepository,
   getPostByUserIdRepository,
   getAvatarByUserIdRepository,
-  getPostsRepository,
+  getTimelineRepository,
   getLikesByIdRepository,
   postLikesByPostIdRepository,
   deleteLikesByPostIdRepository,
@@ -16,8 +16,7 @@ import {
   postCommentRepository,
   getCommentRepository,
   getRepostsByIdRepository,
-  postRepostsByPostIdRepository,
-  getRepostsRepository
+  postRepostsByPostIdRepository
 } from "../repositories/timelineRepositories.js";
 import { getUserByIdRepository } from "../repositories/userRepository.js";
 
@@ -34,26 +33,10 @@ export async function getAvatar(req, res) {
 
 export async function getTimeline(req, res) {
   const session = res.locals.session;
- 
-
   try {
-    const posts = await getPostsRepository(session.user_id);
-    const reposts = await getRepostsRepository(session.user_id);
-    const arrayPosts = [...posts.rows];
-    const arrayReposts = [...reposts.rows];
-    const array = arrayPosts.concat(arrayReposts)
-    array.sort(function (a, b) {
-      if (a.created_at < b.created_at) {
-        return 1;
-      }
-      if (a.created_at > b.created_at) {
-        return -1;
-      }
-      return 0;
-    });
-    const array10 = array.slice(0, 10);
+    const posts = await getTimelineRepository(session.user_id);
     try {
-      for (const post of array10) {
+      for (const post of posts.rows) {
         const meta = await urlMetadata(post.url);
         post.title = meta.title;
         post.image = meta.image;
@@ -62,8 +45,7 @@ export async function getTimeline(req, res) {
     } catch (error) {
       console.log(error);
     }
-
-    return res.status(200).send(array10);
+    return res.status(200).send(posts.rows);
   } catch (error) {
     res.status(500).send(error.message);
   }
