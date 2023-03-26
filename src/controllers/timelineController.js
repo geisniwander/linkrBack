@@ -18,6 +18,7 @@ import {
   getRepostsByIdRepository,
   postRepostsByPostIdRepository
 } from "../repositories/timelineRepositories.js";
+import { addMetaData } from "../util/metaDataCache.js"; 
 import { getUserByIdRepository } from "../repositories/userRepository.js";
 
 export async function getAvatar(req, res) {
@@ -32,19 +33,19 @@ export async function getAvatar(req, res) {
 }
 
 export async function getTimeline(req, res) {
-  const session = res.locals.session;
+  const { limit, postIdAfter, postIdBefore, repostIdAfter } = req.query;
+  const { user_id } = res.locals.session;
+  console.log(limit, postIdAfter, repostIdAfter);
   try {
-    const posts = await getTimelineRepository(session.user_id);
-    try {
-      for (const post of posts.rows) {
-        const meta = await urlMetadata(post.url);
-        post.title = meta.title;
-        post.image = meta.image;
-        post.description = meta.description;
-      }
-    } catch (error) {
-      console.log(error);
-    }
+    const posts = await getTimelineRepository({
+      userId: user_id,
+      limit,
+      postIdAfter,
+      postIdBefore,
+      repostIdAfter
+    });
+    await addMetaData(posts.rows);
+    
     return res.status(200).send(posts.rows);
   } catch (error) {
     res.status(500).send(error.message);
