@@ -86,3 +86,7 @@ export async function getUserByPieceUsernameRepository(username, user_id) {
     [user_id]
   )
  }
+
+ export async function getUserIdRepository(token){
+  return await db.query('SELECT * FROM sessions WHERE token = $1', [token]);
+ }

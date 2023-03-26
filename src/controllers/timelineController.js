@@ -16,10 +16,13 @@ import {
   postCommentRepository,
   getCommentRepository,
   getRepostsByIdRepository,
-  postRepostsByPostIdRepository
+  postRepostsByPostIdRepository,
 } from "../repositories/timelineRepositories.js";
+import {
+  getUserByIdRepository,
+  getUserIdRepository,
+} from "../repositories/userRepository.js";
 import { addMetaData } from "../util/metaDataCache.js"; 
-import { getUserByIdRepository } from "../repositories/userRepository.js";
 
 export async function getAvatar(req, res) {
   try {
@@ -197,7 +200,6 @@ export async function getUserProfile(req, res) {
   }
 }
 
-
 export async function postComments(req, res) {
   const { text, post_id } = req.body;
 
@@ -216,7 +218,12 @@ export async function getComments(req, res) {
   const { post_id } = req.params;
 
   try {
-    const comments = await getCommentRepository(Number(post_id));
+    const session = res.locals.session;
+
+    const comments = await getCommentRepository(
+      Number(post_id),
+      session.user_id
+    );
 
     return res.send(comments.rows);
   } catch (error) {

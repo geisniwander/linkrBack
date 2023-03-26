@@ -70,9 +70,9 @@ export async function getTimelineRepository({
 
 export async function getLikesByIdRepository(postId) {
   return await db.query(
-    `select users.username from likes join users on likes.user_id = users.id where post_id = $1;`, [
-    postId
-  ]);
+    `select users.username from likes join users on likes.user_id = users.id where post_id = $1;`,
+    [postId]
+  );
 }
 
 export async function postLikesByPostIdRepository(postId, userId) {
@@ -85,7 +85,7 @@ export async function postLikesByPostIdRepository(postId, userId) {
 export async function deleteLikesByPostIdRepository(postId, userId) {
   await db.query(`delete from likes where post_id = $1 AND user_id = $2;`, [
     postId,
-    userId
+    userId,
   ]);
 }
 
@@ -117,26 +117,20 @@ export async function getTimelineByUserIdRepository(user_id) {
 
 export async function putPublishRepository(description, postId, userId) {
   await db.query(`UPDATE posts SET "text"=$1 WHERE id = $2 AND user_id = $3;`, [
-    description, postId, userId
+    description,
+    postId,
+    userId,
   ]);
 }
 
 export async function deletePublishByPostIdRepository(postId, userId) {
-  await db.query(`delete from likes where post_id = $1;`, [
-    postId
-  ]);
-  await db.query(`delete from posts_hashtags where post_id = $1;`, [
-    postId
-  ]);
-  await db.query(`delete from comments where post_id = $1;`, [
-    postId
-  ]);
-  await db.query(`delete from reposts where post_id = $1;`, [
-    postId
-  ]);
+  await db.query(`delete from likes where post_id = $1;`, [postId]);
+  await db.query(`delete from posts_hashtags where post_id = $1;`, [postId]);
+  await db.query(`delete from comments where post_id = $1;`, [postId]);
+  await db.query(`delete from reposts where post_id = $1;`, [postId]);
   await db.query(`delete from posts where id = $1 AND user_id = $2;`, [
     postId,
-    userId
+    userId,
   ]);
 }
 
@@ -149,7 +143,7 @@ export async function postCommentRepository(text, user_id, post_id) {
     [text, user_id, post_id]
   );
 }
-
+/*
 export async function getCommentRepository(post_id) {
   return await db.query(
     ` SELECT comments.id as comment_id, comments.text, users.picture_url, users.username, users.id as user_id,
@@ -163,13 +157,37 @@ export async function getCommentRepository(post_id) {
     [post_id]
 
   );
+}*/
+
+export async function getCommentRepository(post_id, user_id) {
+  return await db.query(
+    `SELECT 
+    comments.id as comment_id, 
+    comments.text, 
+    users.picture_url, 
+    users.username, 
+    users.id as user_id,
+    posts.user_id as post_author,
+    CASE 
+      WHEN EXISTS (SELECT 1 FROM follows WHERE user_id = $2 AND user_followed = comments.user_id) 
+      THEN 'true'
+      ELSE 'false'
+    END as is_followed
+  FROM comments
+  JOIN users ON users.id = comments.user_id
+  JOIN posts ON posts.id = comments.post_id
+  WHERE comments.post_id = $1
+  ORDER BY comments.id DESC
+  `,
+    [post_id, user_id]
+  );
 }
 
 export async function getRepostsByIdRepository(postId) {
   return await db.query(
-    `select users.username from reposts join users on reposts.user_id = users.id where post_id = $1;`, [
-    postId
-  ]);
+    `select users.username from reposts join users on reposts.user_id = users.id where post_id = $1;`,
+    [postId]
+  );
 }
 export async function postRepostsByPostIdRepository(postId, userId) {
   await db.query(`INSERT INTO reposts (post_id, user_id) VALUES ($1, $2);`, [
