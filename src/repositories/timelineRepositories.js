@@ -48,12 +48,44 @@ export async function getTimelineRepository({
   repostIdBefore = 2 ** 31 - 1,
 }) {
   return await db.query(
-    `SELECT null as reposted_by, posts.id as post_id, posts.text, posts.url, users.picture_url, users.username, users.id as user_id, posts.created_at as created_at,
-      null as repost_id
+    // `SELECT null as reposted_by, posts.id as post_id, posts.text, posts.url, users.picture_url, users.username, users.id as user_id, posts.created_at as created_at,
+    //   null as repost_id
+    //   FROM posts
+    //   JOIN follows ON follows.user_followed = posts.user_id
+    //   JOIN users ON users.id = posts.user_id
+    //   WHERE (follows.user_id = $1 OR users.id = $1) AND (posts.id > $2) AND (posts.id < $4)
+    // UNION
+    // SELECT ur.username as reposted_by, posts.id as post_id, posts.text, posts.url, u.picture_url, u.username, u.id as user_id, reposts.created_at as created_at,
+    //   reposts.id as repost_id
+    //   from reposts 
+    //   JOIN follows ON follows.user_followed = reposts.user_id 
+    //   JOIN posts ON reposts.post_id = posts.id
+    //   JOIN users u ON u.id = posts.user_id
+    //   JOIN users ur ON ur.id = reposts.user_id
+    //   WHERE (follows.user_id = $1 OR ur.id = $1) AND (reposts.id > $3) AND (reposts.id < $5)
+    //   ORDER BY created_at DESC LIMIT 10`,
+
+    `
+    SELECT null as reposted_by, posts.id as post_id, posts.text, posts.url, users.picture_url, users.username, users.id as user_id, posts.created_at as created_at,
+      0 as repost_id
+      FROM posts
+      JOIN users ON users.id = posts.user_id
+      WHERE ( users.id = $1) AND (posts.id > $2) AND (posts.id < $4)
+    UNION
+    SELECT null as reposted_by, posts.id as post_id, posts.text, posts.url, users.picture_url, users.username, users.id as user_id, posts.created_at as created_at,
+      0 as repost_id
       FROM posts
       JOIN follows ON follows.user_followed = posts.user_id
       JOIN users ON users.id = posts.user_id
-      WHERE (follows.user_id = $1 OR users.id = $1) AND (posts.id > $2) AND (posts.id < $4)
+      WHERE (follows.user_id = $1) AND (posts.id > $2) AND (posts.id < $4)
+    UNION
+    SELECT ur.username as reposted_by, posts.id as post_id, posts.text, posts.url, u.picture_url, u.username, u.id as user_id, reposts.created_at as created_at,
+      reposts.id as repost_id
+      from reposts 
+      JOIN posts ON reposts.post_id = posts.id
+      JOIN users u ON u.id = posts.user_id
+      JOIN users ur ON ur.id = reposts.user_id
+      WHERE ( ur.id = $1) AND (reposts.id > $3) AND (reposts.id < $5)
     UNION
     SELECT ur.username as reposted_by, posts.id as post_id, posts.text, posts.url, u.picture_url, u.username, u.id as user_id, reposts.created_at as created_at,
       reposts.id as repost_id
@@ -62,8 +94,9 @@ export async function getTimelineRepository({
       JOIN posts ON reposts.post_id = posts.id
       JOIN users u ON u.id = posts.user_id
       JOIN users ur ON ur.id = reposts.user_id
-      WHERE (follows.user_id = $1 OR ur.id = $1) AND (reposts.id > $3) AND (reposts.id < $5)
-      ORDER BY created_at DESC LIMIT 10`,
+      WHERE (follows.user_id = $1) AND (reposts.id > $3) AND (reposts.id < $5)
+      ORDER BY created_at DESC LIMIT 10
+    `,
     [userId, postIdAfter, repostIdAfter, postIdBefore, repostIdBefore]
   );
 }
